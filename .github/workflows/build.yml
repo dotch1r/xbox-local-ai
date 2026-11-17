@@ -24,12 +24,16 @@ jobs:
         shell: pwsh
         run: git clone --depth 1 --branch $env:LLAMA_TAG https://github.com/ggml-org/llama.cpp.git llama.cpp
 
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Native dll derle
         shell: pwsh
         run: |
-          cmake -S native -B native/build -G "Visual Studio 17 2022" -A x64 "-DLLAMA_DIR=$PWD/llama.cpp"
-          cmake --build native/build --config Release --target llama_wrap
-          Copy-Item native/build/Release/llama_wrap.dll XboxAI/llama_wrap.dll
+          cmake -S native -B native/build -G Ninja -DCMAKE_BUILD_TYPE=Release "-DLLAMA_DIR=$PWD/llama.cpp"
+          cmake --build native/build --target llama_wrap
+          Copy-Item native/build/llama_wrap.dll XboxAI/llama_wrap.dll
           Get-Item XboxAI/llama_wrap.dll
 
       - name: Modeli indir (Qwen2.5 0.5B Q4_K_M)
