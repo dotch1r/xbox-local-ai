@@ -40,10 +40,11 @@ jobs:
           Copy-Item native/build/llama_wrap.dll XboxAI/llama_wrap.dll
           Get-Item XboxAI/llama_wrap.dll
 
-      - name: Modeli indir (Qwen2.5 0.5B Q4_K_M)
+      - name: Modeli indir (Qwen2.5 1.5B Q3_K_M)
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf" -OutFile XboxAI/Assets/model.gguf
+          # Daha buyuk model icin dosya adini degistir: q4_k_m (~1.1 GB, daha kaliteli, 1 GB RAM siniri icin riskli)
+          Invoke-WebRequest -Uri "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q3_k_m.gguf" -OutFile XboxAI/Assets/model.gguf
           Get-Item XboxAI/Assets/model.gguf
 
       - name: Imza sertifikasi olustur
