@@ -33,6 +33,8 @@ jobs:
       - name: Native dll derle
         shell: pwsh
         run: |
+          (Get-Content native/wrap.cpp -Raw) -replace 'llama_memory_clear\(llama_get_memory\(g_ctx\), true\)', 'llama_kv_self_clear(g_ctx)' | Set-Content native/wrap.cpp
+          Select-String -Path native/wrap.cpp -Pattern "kv_self_clear"
           cmake -S native -B native/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGGML_BMI2=OFF "-DLLAMA_DIR=$PWD/llama.cpp"
           cmake --build native/build --target llama_wrap
           Copy-Item native/build/llama_wrap.dll XboxAI/llama_wrap.dll
