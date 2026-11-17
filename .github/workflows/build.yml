@@ -18,6 +18,8 @@ jobs:
         shell: pwsh
         run: |
           Expand-Archive -Path project.zip -DestinationPath . -Force
+          $now = Get-Date
+          Get-ChildItem -Path XboxAI, native -Recurse -File | ForEach-Object { $_.LastWriteTime = $now }
           Get-ChildItem -Recurse -Depth 2 | Select-Object -First 40 FullName
 
       - name: llama.cpp indir
@@ -31,7 +33,7 @@ jobs:
       - name: Native dll derle
         shell: pwsh
         run: |
-          cmake -S native -B native/build -G Ninja -DCMAKE_BUILD_TYPE=Release "-DLLAMA_DIR=$PWD/llama.cpp"
+          cmake -S native -B native/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGGML_BMI2=OFF "-DLLAMA_DIR=$PWD/llama.cpp"
           cmake --build native/build --target llama_wrap
           Copy-Item native/build/llama_wrap.dll XboxAI/llama_wrap.dll
           Get-Item XboxAI/llama_wrap.dll
