@@ -57,10 +57,19 @@ jobs:
 
       - uses: microsoft/setup-msbuild@v2
 
+      - name: Windows SDK surumunu bul
+        shell: pwsh
+        run: |
+          $dirs = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\Platforms\UAP" | Select-Object -ExpandProperty Name
+          "Yuklu UAP SDK'lar: $($dirs -join ', ')"
+          $v = ($dirs | Sort-Object { [version]$_ } -Descending | Select-Object -First 1)
+          "SDKV=$v" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "Secilen: $v"
+
       - name: UWP paketini derle
         shell: pwsh
         run: |
-          msbuild XboxAI\XboxAI.csproj /restore /p:Configuration=Release /p:Platform=x64 `
+          msbuild XboxAI\XboxAI.csproj /restore /p:Configuration=Release /p:Platform=x64 "/p:TargetPlatformVersion=$env:SDKV" `
             /p:AppxBundle=Never /p:UapAppxPackageBuildMode=SideloadOnly /p:GenerateAppxPackageOnBuild=true `
             "/p:AppxPackageDir=$PWD\out\" /p:AppxPackageSigningEnabled=true `
             "/p:PackageCertificateKeyFile=$PWD\cert.pfx" /p:PackageCertificatePassword=xboxai123 `
